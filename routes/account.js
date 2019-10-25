@@ -7,7 +7,7 @@ const db = require("../db/database.js");
 async function accountDb(values, res) {
   const salt = await bcrypt.genSalt(10);
   const password = await bcrypt.hash(values.password, salt);
-
+  console.log(values);
   db.run(
     "INSERT INTO accounts (firstname, lastname, email, password) VALUES (?, ?, ?, ?)",
     values.firstName,
@@ -28,7 +28,7 @@ function checkToken(req, res, next) {
   const token = req.headers["x-access-token"];
   const secret = "hemligakorvmojjar";
 
-  jwt.verify(token, secret, function(err, decoded) {
+  jwt.verify(token, secret, function (err, decoded) {
     if (err) {
       return res.status(401).json({ error: "token doesnt exist" });
     }
@@ -39,13 +39,12 @@ function checkToken(req, res, next) {
 }
 
 // Route for creating an account
-router.post("/signup", function(req, res, next) {
+router.post("/signup", function (req, res, next) {
   accountDb(req.body, res);
 });
 
 // Route for signing in a user to the platform
-router.post("/signin", function(req, res, next) {
-  console.log("hjeysan");
+router.post("/signin", function (req, res, next) {
   db.get(
     "SELECT password FROM accounts WHERE email = ? ",
     req.body.email,
@@ -56,7 +55,7 @@ router.post("/signin", function(req, res, next) {
         return "error";
       }
 
-      bcrypt.compare(req.body.password, row.password, function(err, encrypted) {
+      bcrypt.compare(req.body.password, row.password, function (err, encrypted) {
         if (encrypted) {
           const payload = { email: `${req.body.email}` };
           const secret = "hemligakorvmojjar";

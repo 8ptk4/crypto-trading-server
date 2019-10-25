@@ -1,7 +1,6 @@
 CREATE TABLE
 IF NOT EXISTS accounts
 (
-    accountId INTERGER PRIMARY KEY,
     firstname VARCHAR
 (60) NOT NULL,
     lastname VARCHAR
@@ -20,7 +19,6 @@ IF NOT EXISTS accounts
 CREATE TABLE
 IF NOT EXISTS wallets
 (
-    walletId INTEGER PRIMARY KEY,
     user VARCHAR
 (60) NOT NULL,
     balance INTEGER DEFAULT 0,
@@ -33,7 +31,6 @@ IF NOT EXISTS wallets
 CREATE TABLE
 IF NOT EXISTS crypto
 (
-    cryptoId INTEGER PRIMARY KEY,
     currency VARCHAR
 (40) NOT NULL,
     value REAL,
@@ -45,8 +42,20 @@ IF NOT EXISTS crypto
 INSERT INTO crypto
     (currency, value)
 VALUES
-    ('BitCoin', 7900),
+    ('BitCoin', 6000),
     ('BitConnect', 40000);
+
+
+CREATE TABLE
+IF NOT EXISTS holdings
+(
+    account VARCHAR
+(60) NOT NULL,
+    crypto VARCHAR
+(40) NOT NULL,
+    amount INTERGER DEFAULT 0
+);
+
 
 CREATE TABLE
 IF NOT EXISTS history
@@ -63,6 +72,11 @@ IF NOT EXISTS history
 (historyID)
 );
 
+
+
+
+
+
 CREATE TRIGGER aft_create_user AFTER
 INSERT ON
 accounts
@@ -70,5 +84,16 @@ BEGIN
     INSERT INTO wallets
         (user)
     VALUES(NEW.email);
+END;
+
+CREATE TRIGGER aft_create_user_holdings AFTER
+INSERT ON
+accounts
+BEGIN
+    INSERT INTO holdings
+        (account, crypto)
+    VALUES
+        (NEW.email, 'BitCoin'),
+        (NEW.email, 'BitConnect');
 END;
 
