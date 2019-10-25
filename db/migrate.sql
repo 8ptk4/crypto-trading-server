@@ -97,3 +97,7 @@ BEGIN
         (NEW.email, 'BitConnect');
 END;
 
+/* After update on holdings account 
+    * Change wallet balance
+*/
+
