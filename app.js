@@ -9,8 +9,7 @@ const wallet = require("./routes/wallet");
 const crypto = require("./routes/crypto");
 const chart = require("./routes/chart");
 const holdings = require("./routes/holdings");
-
-const axios = require("axios");
+const history = require("./routes/history");
 
 const port = 1337;
 
@@ -33,53 +32,21 @@ app.use("/account", account);
 app.use("/wallet", wallet);
 app.use("/crypto", crypto);
 app.use("/holdings", holdings);
-
-const Data = [
-  {
-    name: '14:00',
-    BitCoin: 10000,
-    BitConnect: 2400,
-  },
-  {
-    name: '14:10',
-    BitCoin: 3000,
-    BitConnect: 1398,
-  },
-  {
-    name: '14:15',
-    BitCoin: 4000,
-    BitConnect: 2400,
-  },
-  {
-    name: '14:30',
-    BitCoin: 3000,
-    BitConnect: 1398,
-  },
-  {
-    name: '14:40',
-    BitCoin: 9000,
-    BitConnect: 9398,
-  },
-  {
-    name: '15:00',
-    BitCoin: 19000,
-    BitConnect: 2398,
-  },
-  {
-    name: '17:00',
-    BitCoin: 40000,
-    BitConnect: 12398,
-  }
-];
+app.use("/history", history);
+app.use("/chart", chart);
 
 io.sockets.on('connection', socket => {
-  console.log("User connected")
-
-  socket.on('disconnect', () => {
-    console.log("User disconnected")
+  socket.on('history_data', (data) => {
+    io.emit('history_data', data)
   })
 
-  socket.emit('chart_data', Data)
+  socket.on('crypto_value', (data) => {
+    io.emit('crypto_value', data)
+  })
+
+  socket.on('chart_value', (data) => {
+    io.emit('chart_value', data)
+  })
 })
 
 app.use((req, res, next) => {
@@ -103,6 +70,5 @@ app.use((err, req, res, next) => {
     ]
   });
 });
-
 
 module.exports = server;

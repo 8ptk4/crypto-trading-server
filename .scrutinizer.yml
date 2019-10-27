@@ -1,0 +1,15 @@
+ 
+filter:
+  excluded_paths: ["test/*", ".nyc_output/", "coverage"]
+
+build:
+  nodes:
+    coverage:
+      tests:
+        override:
+          - command: npm test
+            coverage:
+              file: coverage/clover.xml
+              # These formats are supported:
+              # clover, cobertura, jacoco, python-cc, ruby-cc, go-cc, lcov
+              format: clover

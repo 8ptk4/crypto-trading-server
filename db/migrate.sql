@@ -45,7 +45,6 @@ VALUES
     ('BitCoin', 6000),
     ('BitConnect', 40000);
 
-
 CREATE TABLE
 IF NOT EXISTS holdings
 (
@@ -59,23 +58,28 @@ IF NOT EXISTS holdings
 
 CREATE TABLE
 IF NOT EXISTS history
-(
-    historyId INTEGER PRIMARY KEY,
+(   
     buyer VARCHAR
 (50) NOT NULL,
+    price INTEGER
+    NOT NULL,
     currency VARCHAR
 (40) NOT NULL,
-    amount INTEGER NOT NULL,
-    date DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-    UNIQUE
-(historyID)
+    action VARCHAR
+(40) NOT NULL,
+    amount INTEGER NOT NULL DEFAULT 0,
+    date TIME DEFAULT CURRENT_TIMESTAMP
 );
 
 
-
-
-
+CREATE TABLE
+IF NOT EXISTS chart
+(
+    btc INTEGER NOT NULL,
+    bc INTEGER NOT NULL,
+    date TIME
+DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TRIGGER aft_create_user AFTER
 INSERT ON
@@ -85,6 +89,10 @@ BEGIN
         (user)
     VALUES(NEW.email);
 END;
+
+
+
+
 
 CREATE TRIGGER aft_create_user_holdings AFTER
 INSERT ON
@@ -97,7 +105,32 @@ BEGIN
         (NEW.email, 'BitConnect');
 END;
 
-/* After update on holdings account 
-    * Change wallet balance
-*/
 
+CREATE TRIGGER
+IF NOT EXISTS update_stocks AFTER
+INSERT ON
+history
+BEGIN
+    UPDATE crypto SET
+        value = ((SELECT ABS(RANDOM()) % (40000 - 1000) + 1000))
+    WHERE currency=NEW.currency;
+END;
+
+CREATE TRIGGER
+IF NOT EXISTS update_chart AFTER
+UPDATE ON
+crypto
+BEGIN
+    INSERT INTO chart
+        (btc, bc)
+    VALUES
+        (
+            (SELECT value
+            FROM crypto
+            WHERE currency='BitCoin')
+    ,
+            (SELECT value
+            FROM crypto
+            WHERE currency='BitConnect')
+    );
+END;
