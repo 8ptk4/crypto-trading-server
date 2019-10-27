@@ -33,7 +33,7 @@ IF NOT EXISTS crypto
 (
     currency VARCHAR
 (40) NOT NULL,
-    value REAL,
+    value REAL DEFAULT 0,
 
     UNIQUE
 (currency)
