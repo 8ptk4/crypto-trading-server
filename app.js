@@ -1,39 +1,37 @@
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const morgan = require("morgan");
-const cors = require("cors");
+const app = require("express")()
+const http = require("http").createServer(app)
+const io = require('socket.io')(http)
 
-const account = require("./routes/account");
-const wallet = require("./routes/wallet");
-const crypto = require("./routes/crypto");
-const chart = require("./routes/chart");
-const holdings = require("./routes/holdings");
-const history = require("./routes/history");
+const bodyParser = require("body-parser")
+const morgan = require("morgan")
+const cors = require("cors")
 
-const port = 1337;
+// Routes
+const account = require("./routes/account")
+const wallet = require("./routes/wallet")
+const crypto = require("./routes/crypto")
+const chart = require("./routes/chart")
+const holdings = require("./routes/holdings")
+const history = require("./routes/history")
 
-const server = app.listen(port, () => {
-  console.log(`Example API listening on port ${port}`);
-});
+// Port
+const port = 1337
 
-const io = require('socket.io')(server);
-
-app.use(cors());
+app.use(cors())
 
 if (process.env.NODE_ENV !== "test") {
-  app.use(morgan("combined"));
+  app.use(morgan("combined"))
 }
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use("/account", account);
-app.use("/wallet", wallet);
-app.use("/crypto", crypto);
-app.use("/holdings", holdings);
-app.use("/history", history);
-app.use("/chart", chart);
+app.use("/account", account)
+app.use("/wallet", wallet)
+app.use("/crypto", crypto)
+app.use("/holdings", holdings)
+app.use("/history", history)
+app.use("/chart", chart)
 
 io.sockets.on('connection', socket => {
   socket.on('history_data', (data) => {
@@ -50,9 +48,9 @@ io.sockets.on('connection', socket => {
 })
 
 app.use((req, res, next) => {
-  const err = new Error("Not Found");
-  err.status = 404;
-  next(err);
+  const err = new Error("Not Found")
+  err.status = 404
+  next(err)
 });
 
 app.use((err, req, res, next) => {
@@ -68,7 +66,11 @@ app.use((err, req, res, next) => {
         detail: err.message
       }
     ]
-  });
-});
+  })
+})
 
-module.exports = server;
+http.listen(port, () => {
+  console.log(`Server is up on port ${port}`)
+})
+
+module.exports = http
