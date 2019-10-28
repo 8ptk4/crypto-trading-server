@@ -1,3 +1,9 @@
+-------------------------------------------------------------------------------
+-- ACCOUNTS
+-- Store all account registrations
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS accounts;
+
 CREATE TABLE
 IF NOT EXISTS accounts
 (
@@ -13,8 +19,13 @@ IF NOT EXISTS accounts
     UNIQUE
 (email)
 );
+-------------------------------------------------------------------------------
 
-
+-------------------------------------------------------------------------------
+-- WALLETS 
+-- STORAGE OF ACCOUNT BALANCE aka BANK
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS wallets;
 
 CREATE TABLE
 IF NOT EXISTS wallets
@@ -27,6 +38,13 @@ IF NOT EXISTS wallets
     UNIQUE
 (user)
 );
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+-- CRYPTO
+-- What the crypto currencies is worth
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS crypto;
 
 CREATE TABLE
 IF NOT EXISTS crypto
@@ -39,11 +57,19 @@ IF NOT EXISTS crypto
 (currency)
 );
 
+-- INSERT STARTING VALUES
 INSERT INTO crypto
     (currency, value)
 VALUES
     ('BitCoin', 6000),
     ('BitConnect', 40000);
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+-- HOLDINGS
+-- How many of each crypto currency each account have
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS holdings;
 
 CREATE TABLE
 IF NOT EXISTS holdings
@@ -54,7 +80,13 @@ IF NOT EXISTS holdings
 (40) NOT NULL,
     amount INTERGER DEFAULT 0
 );
+-------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+-- HISTORY
+-- Successful transactions
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS history;
 
 CREATE TABLE
 IF NOT EXISTS history
@@ -70,7 +102,13 @@ IF NOT EXISTS history
     amount INTEGER NOT NULL DEFAULT 0,
     date TIME DEFAULT CURRENT_TIMESTAMP
 );
+-------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+-- CHART
+-- Crypto currencies after each transaction
+-------------------------------------------------------------------------------
+DROP TABLE IF EXISTS chart;
 
 CREATE TABLE
 IF NOT EXISTS chart
@@ -80,7 +118,11 @@ IF NOT EXISTS chart
     date TIME
 DEFAULT CURRENT_TIMESTAMP
 );
+-------------------------------------------------------------------------------
 
+-------------------------------------------------------------------------------
+-- TRIGGERS 
+-------------------------------------------------------------------------------
 CREATE TRIGGER aft_create_user AFTER
 INSERT ON
 accounts
@@ -89,11 +131,7 @@ BEGIN
         (user)
     VALUES(NEW.email);
 END;
-
-
-
-
-
+-------------------------------------------------------------------------------
 CREATE TRIGGER aft_create_user_holdings AFTER
 INSERT ON
 accounts
@@ -104,8 +142,7 @@ BEGIN
         (NEW.email, 'BitCoin'),
         (NEW.email, 'BitConnect');
 END;
-
-
+-------------------------------------------------------------------------------
 CREATE TRIGGER
 IF NOT EXISTS update_stocks AFTER
 INSERT ON
@@ -115,7 +152,7 @@ BEGIN
         value = ((SELECT ABS(RANDOM()) % (40000 - 1000) + 1000))
     WHERE currency=NEW.currency;
 END;
-
+-------------------------------------------------------------------------------
 CREATE TRIGGER
 IF NOT EXISTS update_chart AFTER
 UPDATE ON
@@ -134,3 +171,4 @@ BEGIN
             WHERE currency='BitConnect')
     );
 END;
+-------------------------------------------------------------------------------
