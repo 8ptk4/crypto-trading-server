@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const db = require("../db/database.js")
 
+
+
 async function accountDb(values, res) {
   const salt = await bcrypt.genSalt(10)
   const password = await bcrypt.hash(values.password, salt)
@@ -21,7 +23,7 @@ async function accountDb(values, res) {
 
       return res.status(201).json({ response: "User created successfully" })
     }
-  );
+  )
 }
 
 
@@ -59,5 +61,7 @@ router.post("/signin", function (req, res, next) {
     }
   )
 })
+
+
 
 module.exports = router

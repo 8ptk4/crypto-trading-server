@@ -1,7 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const db = require("../db/database.js");
-const checkToken = require("./checkToken");
+const express = require("express")
+const router = express.Router()
+const db = require("../db/database.js")
+const checkToken = require("./checkToken")
+
+
+
 
 router.get("/show",
   (req, res, next) => checkToken(req, res, next),
@@ -10,19 +13,22 @@ router.get("/show",
       req.user.email,
       (err, row) => {
         if (err) {
-          return res.status(401).json({ response: "Something went wrong" });
+          return res.status(401).json({ response: "Something went wrong" })
         }
 
-        return res.status(201).json({ row });
+        return res.status(201).json({ row })
 
       }
-    );
-  });
+    )
+  })
+
+
+
 
 router.post("/transaction", function (req, res, next) {
-  const action = req.body.action === 'sold' ? "-" : "+";
-  const convertedAction = req.body.action === 'sold' ? "+" : "-";
-  const transactionPrice = (req.body.amount * req.body.price);
+  const action = req.body.action === 'sold' ? "-" : "+"
+  const convertedAction = req.body.action === 'sold' ? "+" : "-"
+  const transactionPrice = (req.body.amount * req.body.price)
   db.run(
     `UPDATE holdings SET amount=amount${action}? WHERE account = ? AND crypto = ?`,
     req.body.amount,
@@ -30,7 +36,7 @@ router.post("/transaction", function (req, res, next) {
     req.body.crypto,
     (err, row) => {
       if (err) {
-        return res.status(401).json({ response: "Something went wrong" });
+        return res.status(401).json({ response: "Something went wrong" })
       }
 
       db.run(
@@ -39,17 +45,17 @@ router.post("/transaction", function (req, res, next) {
         req.body.account,
         (err, row) => {
           if (err) {
-            return res.status(401).json({ response: "Something went wrong" });
+            return res.status(401).json({ response: "Something went wrong" })
           }
 
           return res.status(201).json({
             response: "Success"
-          });
+          })
         }
-      );
+      )
     }
-  );
-});
+  )
+})
 
 
 
