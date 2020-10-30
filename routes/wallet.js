@@ -34,7 +34,7 @@ router.get("/balance",
         if (err) {
           return res.status(401).json({ response: "Something went wrong" })
         }
-
+        console.log(row)
         return res.status(201).json({
           response: row
         })

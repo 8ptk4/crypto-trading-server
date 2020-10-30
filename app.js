@@ -14,9 +14,9 @@ const port = 1337
 
 app.use(cors())
 
-if (process.env.NODE_ENV !== "test") {
-  app.use(morgan("combined"))
-}
+// if (process.env.NODE_ENV !== "test") {
+//   app.use(morgan("combined"))
+// }
 
 app.set("io", io);
 /*
