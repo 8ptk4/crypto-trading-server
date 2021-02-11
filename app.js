@@ -10,59 +10,29 @@ const crypto = require("./routes/crypto")
 const chart = require("./routes/chart")
 const holdings = require("./routes/holdings")
 const history = require("./routes/history")
-const port = 1337
+const port = 8333
 
-app.use(cors())
+app.use(cors());
 
-// if (process.env.NODE_ENV !== "test") {
-//   app.use(morgan("combined"))
-// }
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("combined"));
+}
 
 app.set("io", io);
-/*
-app.use(function(req, res, next){
-  res.io = io;
-  next();
-});
-*/
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
-app.use("/account", account)
-app.use("/wallet", wallet)
-app.use("/crypto", crypto)
-app.use("/holdings", holdings)
-app.use("/history", history)
-app.use("/chart", chart)
-
-/*
-Here's an example of the app.set() scheme:
-let server = app.listen(3000);
-let io = require('socket.io')(server);
-app.set("io", io);
-
-Then, anywhere in your routes that you have access to the app object, you can get it with:
-let io = app.get("io");
-*/
-
-/*
-io.sockets.on('connection', socket => {
-
-  socket.on('crypto_value', (data) => {
-    io.emit('crypto_value', data)
-  })
-
-  socket.on('chart_value', (data) => {
-    io.emit('chart_value', data)
-  })
-})
-*/
-
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/account", account);
+app.use("/wallet", wallet);
+app.use("/crypto", crypto);
+app.use("/holdings", holdings);
+app.use("/history", history);
+app.use("/chart", chart);
 
 app.use((req, res, next) => {
-  const err = new Error("Not Found")
-  err.status = 404
-  next(err)
+  const err = new Error("Not Found");
+  err.status = 404;
+  next(err);
 })
 
 app.use((err, req, res, next) => {
@@ -78,15 +48,15 @@ app.use((err, req, res, next) => {
         detail: err.message
       }
     ]
-  })
-})
+  });
+});
 
 
 
 http.listen(port, () => {
   console.log(`Server is up on port ${port}`)
-})
+});
 
 
 
-module.exports = http
+module.exports = http;
