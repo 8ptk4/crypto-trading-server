@@ -1,10 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/database.js")
+const checkToken = require("./checkToken")
 
-
-
-router.post("/add", function (req, res, next) {
+router.post("/add", checkToken, (req, res) => {
   db.run(
     `INSERT INTO history (buyer, price, currency, action, amount) VALUES (?, ?, ?, ?, ?)`,
     req.body.buyer,
@@ -24,16 +23,14 @@ router.post("/add", function (req, res, next) {
   )
 })
 
-
-
-router.get("/get", function (req, res, next) {
+router.get("/get", checkToken, (req, res) => {
   db.all(
     "SELECT amount, date, firstname, lastname, currency, action FROM history INNER JOIN accounts ON history.buyer=accounts.email ORDER BY date DESC LIMIT 10",
     (err, row) => {
       if (err) {
         return res.status(401).json({ response: "Something went wrong" })
       }
-      console.log("123123123", row[0]);
+
       req.app.get("io").emit("history", row[0])
 
       return res.status(200).json({
@@ -43,15 +40,14 @@ router.get("/get", function (req, res, next) {
   )
 })
 
-
-
-router.get("/test", function (req, res, next) {
+router.get("/test", checkToken, (req, res) => {
   db.all(
     "SELECT amount, date, firstname, lastname, currency, action FROM history ORDER BY date DESC LIMIT 10",
     (err, row) => {
       if (err) {
         return res.status(401).json({ response: "Something went wrong" })
       }
+
       req.app.get("io").emit("history", row[0])
 
       return res.status(200).json({
@@ -60,7 +56,5 @@ router.get("/test", function (req, res, next) {
     }
   )
 })
-
-
 
 module.exports = router

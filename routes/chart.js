@@ -1,10 +1,9 @@
 const express = require("express")
 const router = express.Router()
 const db = require("../db/database.js")
+const checkToken = require("./checkToken")
 
-
-
-router.get("/", function (req, res, next) {
+router.get("/", checkToken, (req, res) => {
   db.all(
     "SELECT * FROM chart",
     (err, row) => {
@@ -15,7 +14,6 @@ router.get("/", function (req, res, next) {
       return res.status(201).json({
         response: row
       })
-
     }
   )
 })

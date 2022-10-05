@@ -4,8 +4,6 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const db = require("../db/database.js")
 
-
-
 async function accountDb(values, res) {
   const salt = await bcrypt.genSalt(10)
   const password = await bcrypt.hash(values.password, salt)
@@ -26,15 +24,11 @@ async function accountDb(values, res) {
   )
 }
 
-
-
-router.post("/signup", function (req, res, next) {
+router.post("/signup", (req, res) => {
   accountDb(req.body, res)
 })
 
-
-
-router.post("/signin", function (req, res, next) {
+router.post("/signin", (req, res) => {
   db.get(
     "SELECT password FROM accounts WHERE email = ? ",
     req.body.email,
@@ -45,23 +39,28 @@ router.post("/signin", function (req, res, next) {
         return "error"
       }
 
-      bcrypt.compare(req.body.password, row.password, function (err, encrypted) {
+      bcrypt.compare(req.body.password, row.password, (err, encrypted) => {
         if (encrypted) {
-          const payload = { email: `${req.body.email}` }
-          const secret = "hemligakorvmojjar"
+          const accessToken = jwt.sign({
+            email: req.body.email,
+          }, process.env.JWT_ACCESS_SECRET, { expiresIn: '2m' });
 
-          const token = jwt.sign(payload, secret, { expiresIn: "1h" })
+          const refreshToken = jwt.sign({
+            username: req.body.email,
+          }, process.env.JWT_REFRESH_SECRET, { expiresIn: '2m' });
 
           return res
             .status(200)
-            .json({ hemlighet: token, username: req.body.email })
+            .json({ 
+              accessToken: accessToken, 
+              refreshToken: refreshToken, 
+              username: req.body.email 
+            })
         }
         return res.status(500).json({ error: "Bcrypt error" })
       })
     }
   )
 })
-
-
 
 module.exports = router

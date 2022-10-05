@@ -1,12 +1,9 @@
 const jwt = require("jsonwebtoken")
 
+module.exports = (req, res, next) => {
+  const accessToken = req.headers["x-access-token"]
 
-
-module.exports = function (req, res, next) {
-  const token = req.headers["x-access-token"]
-  const secret = "hemligakorvmojjar"
-
-  jwt.verify(token, secret, function (err, decoded) {
+  jwt.verify(accessToken, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).json({ error: "token doesnt exist" })
     }

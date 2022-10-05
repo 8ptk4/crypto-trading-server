@@ -10,27 +10,32 @@ const crypto = require("./routes/crypto")
 const chart = require("./routes/chart")
 const holdings = require("./routes/holdings")
 const history = require("./routes/history")
+const refreshToken = require("./routes/refreshToken")
 const port = 8333
+require("dotenv").config()
 
 if (process.env.NODE_ENV !== "test") {
-  app.use(morgan("combined"));
+  app.use(morgan("combined"))
 }
-app.set("io", io);
 
+app.set("io", io);
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/account", account);
 app.use("/wallet", wallet);
 app.use("/crypto", crypto);
+app.use("/refresh", refreshToken);
 app.use("/holdings", holdings);
 app.use("/history", history);
 app.use("/chart", chart);
+
 app.use((req, res, next) => {
   const err = new Error("Not Found");
   err.status = 404;
   next(err);
 })
+
 app.use((err, req, res, next) => {
   if (res.headersSent) {
     return next(err);
